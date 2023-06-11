@@ -108,11 +108,13 @@ const Home = () => {
                 label="room-id" 
                 variant="outlined"
                 autocomplete="off" 
+                onChange={(e) => setRoomId(e.target.value)}
               />
               <Button
                 variant="contained"
                 color="primary" 
                 sx={{ height: 40, marginLeft: "8px" }}
+                onClick={enterRoom}
               >
                 join
               </Button>
