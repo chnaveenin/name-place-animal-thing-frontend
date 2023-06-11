@@ -4,13 +4,16 @@ import {
   TextField,
   Typography
 } from "@mui/material"
-import React, {useState} from "react"
+import React, { useState } from "react"
+import { useNavigate } from "react-router";
 
 const Home = () => {
 
   const [join, setJoin] = useState(false)
   const [create, setCreate] = useState(false)
   const [roomId, setRoomId] = useState("")
+
+  const navigate = useNavigate()
 
   const createRoom = () => {
     console.log("creating room")
@@ -23,6 +26,10 @@ const Home = () => {
     console.log("joining room")
     setJoin(true)
     setCreate(false)
+  }
+
+  const enterRoom = () => {
+    navigate("/" + roomId)
   }
 
   function generateRandomString(length) {
@@ -62,6 +69,14 @@ const Home = () => {
               <Typography variant="subtitle1">
                 Room-ID: {roomId}
               </Typography>
+              <Button
+                variant="contained"
+                color="primary" 
+                sx={{ height: 40, marginLeft: "8px" }}
+                onClick={enterRoom}
+              >
+                enter
+              </Button>
             </Box>
           )
         }

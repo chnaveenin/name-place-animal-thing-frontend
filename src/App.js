@@ -1,8 +1,18 @@
+import { Route, Routes } from "react-router-dom"
 import Home from './pages/Home'
+import Game from './pages/Game'
+
 
 function App() {
   return (
-    <Home />
+    <>
+      <Routes>
+        <Route exact path="/" element={<Home />} />
+      </Routes>
+      <Routes>
+        <Route exact path="/:roomid" element={<Game />} />
+      </Routes>
+    </>
   );
 }
 
