@@ -1,7 +1,8 @@
 import {
   Box,
   Button,
-  TextField
+  TextField,
+  Typography
 } from "@mui/material"
 import React, {useState} from "react"
 
@@ -9,15 +10,29 @@ const Home = () => {
 
   const [join, setJoin] = useState(false)
   const [create, setCreate] = useState(false)
+  const [roomId, setRoomId] = useState("")
 
   const createRoom = () => {
     console.log("creating room")
-    setCreate(!create)
+    setCreate(true)
+    setJoin(false)
+    setRoomId(generateRandomString(6))
   }
 
   const joinRoom = () => {
     console.log("joining room")
-    setJoin(!join)
+    setJoin(true)
+    setCreate(false)
+  }
+
+  function generateRandomString(length) {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
   }
 
   return (
@@ -36,6 +51,20 @@ const Home = () => {
         >
           Create Room
         </Button>
+        {
+          create && (
+            <Box
+              m={1}
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+            >
+              <Typography variant="subtitle1">
+                Room-ID: {roomId}
+              </Typography>
+            </Box>
+          )
+        }
       </Box>
       <Box
         m={1}
