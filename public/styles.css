@@ -1,3 +1,7 @@
+body {
+  margin: 0
+}
+
 .homeBody {
   background-image: url(game.jpeg); 
   height: 100vh;

@@ -1,30 +1,26 @@
 import {
   Box,
   Button,
-  TextField,
-  Typography
+  TextField
 } from "@mui/material"
 import React, { useState } from "react"
 import { useNavigate } from "react-router";
 
 const Home = () => {
   const [join, setJoin] = useState(false)
-  const [create, setCreate] = useState(false)
   const [roomId, setRoomId] = useState("")
 
   const navigate = useNavigate()
 
   const createRoom = () => {
     console.log("creating room")
-    setCreate(true)
     setJoin(false)
-    setRoomId(generateRandomString(6))
+    navigate("/" + generateRandomString(6))
   }
 
   const joinRoom = () => {
     console.log("joining room")
     setJoin(true)
-    setCreate(false)
   }
 
   const enterRoom = () => {
@@ -58,28 +54,6 @@ const Home = () => {
           >
             Create Room
           </Button>
-          {
-            create && (
-              <Box
-                m={1}
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-              >
-                <Typography variant="subtitle1">
-                  Room-ID: {roomId}
-                </Typography>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  sx={{ height: 40, marginLeft: "8px" }}
-                  onClick={enterRoom}
-                >
-                  enter
-                </Button>
-              </Box>
-            )
-          }
         </Box>
         <Box
           m={1}
