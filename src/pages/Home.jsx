@@ -8,7 +8,6 @@ import React, { useState } from "react"
 import { useNavigate } from "react-router";
 
 const Home = () => {
-
   const [join, setJoin] = useState(false)
   const [create, setCreate] = useState(false)
   const [roomId, setRoomId] = useState("")
@@ -43,86 +42,88 @@ const Home = () => {
   }
 
   return (
-    <>
-      <Box
-        m={1}
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-      >
-        <Button 
-          variant="contained"
-          color="primary"
-          sx={{ height: 40, width: 150 }}
-          onClick={createRoom}
+    <div className="homeBody">
+      <div className="overlay">
+        <Box
+          m={1}
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
         >
-          Create Room
-        </Button>
-        {
-          create && (
-            <Box
-              m={1}
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Typography variant="subtitle1">
-                Room-ID: {roomId}
-              </Typography>
-              <Button
-                variant="contained"
-                color="primary" 
-                sx={{ height: 40, marginLeft: "8px" }}
-                onClick={enterRoom}
+          <Button
+            variant="contained"
+            color="secondary"
+            sx={{ height: 40, width: 150 }}
+            onClick={createRoom}
+          >
+            Create Room
+          </Button>
+          {
+            create && (
+              <Box
+                m={1}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
               >
-                enter
-              </Button>
-            </Box>
-          )
-        }
-      </Box>
-      <Box
-        m={1}
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-      >
-        <Button 
-          variant="contained"
-          color="primary" 
-          sx={{ height: 40, width: 150 }}
-          onClick={joinRoom}
+                <Typography variant="subtitle1">
+                  Room-ID: {roomId}
+                </Typography>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ height: 40, marginLeft: "8px" }}
+                  onClick={enterRoom}
+                >
+                  enter
+                </Button>
+              </Box>
+            )
+          }
+        </Box>
+        <Box
+          m={1}
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
         >
-          Join Room
-        </Button>
-        {
-          join && (
-            <Box
-              m={1}
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-            >
-              <TextField
-                id="outlined-basic" 
-                label="room-id" 
-                variant="outlined"
-                autocomplete="off" 
-                onChange={(e) => setRoomId(e.target.value)}
-              />
-              <Button
-                variant="contained"
-                color="primary" 
-                sx={{ height: 40, marginLeft: "8px" }}
-                onClick={enterRoom}
+          <Button
+            variant="contained"
+            color="success"
+            sx={{ height: 40, width: 150 }}
+            onClick={joinRoom}
+          >
+            Join Room
+          </Button>
+          {
+            join && (
+              <Box
+                m={1}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
               >
-                join
-              </Button>
-            </Box>
-          )
-        }
-      </Box>
-    </>
+                <TextField
+                  id="outlined-basic"
+                  label="room-id"
+                  variant="outlined"
+                  autocomplete="off"
+                  onChange={(e) => setRoomId(e.target.value)}
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ height: 40, marginLeft: "8px" }}
+                  onClick={enterRoom}
+                >
+                  join
+                </Button>
+              </Box>
+            )
+          }
+        </Box>
+      </div>
+    </div>
   )
 }
 
