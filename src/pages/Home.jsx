@@ -100,7 +100,7 @@ const Home = () => {
         >
           <Typography
             variant="h2"
-            color="linen"
+            color="black"
             sx={{marginBottom: "0.5em"}}
           >
             Welcome {username}
