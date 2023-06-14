@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import {
   Box,
   Button,
+  CircularProgress,
   IconButton,
   TextField,
   Typography
@@ -16,9 +17,12 @@ const Home = () => {
   const [roomId, setRoomId] = useState("")
   const [error, setError] = useState("")
 
+  const [loading, setLoading] = useState(false)
+
   const navigate = useNavigate()
 
   const createRoom = async () => {
+    setLoading(true)
     console.log("creating room")
     setJoin(false)
     while (true) {
@@ -61,8 +65,8 @@ const Home = () => {
     const response = await fetch("http://localhost:8080/join-room/" + roomId, {
       method: "PATCH",
       body: JSON.stringify({
-          name: username,
-          score: 0
+        name: username,
+        score: 0
       }),
       headers: {
         "Content-Type": "application/json"
@@ -88,108 +92,112 @@ const Home = () => {
   }
 
   return (
-    <div className="homeBody">
-      <div className="overlay">
-        <Box
-          m={1}
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          alignItems="center"
-          sx={{marginBottom: "15%"}}
-        >
-          <Typography
-            variant="h2"
-            color="black"
-            sx={{marginBottom: "0.5em"}}
+    loading
+      ?
+      <CircularProgress />
+      :
+      <div className="homeBody">
+        <div className="overlay">
+          <Box
+            m={1}
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
+            alignItems="center"
+            sx={{ marginBottom: "15%" }}
           >
-            Welcome {username}
-          </Typography>
-          {!save &&
-            <form
-              onSubmit={(e) => {
-                e.preventDefault()
-                setSave(true)
-              }}
+            <Typography
+              variant="h2"
+              color="black"
+              sx={{ marginBottom: "0.5em" }}
             >
-              <TextField
-                id="outlined-basic"
-                label="username"
-                variant="filled"
-                autoComplete="off"
-                color="warning"
-                onChange={(e) => setUsername(e.target.value)}
-              />
-              <IconButton
-                color="white"
-                aria-label="save username"
-                onClick={() => setSave(true)}
+              Welcome {username}
+            </Typography>
+            {!save &&
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  setSave(true)
+                }}
               >
-                <DoneAllOutlinedIcon />
-              </IconButton>
-            </form>
-          }
-        </Box>
-        <Box
-          m={1}
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-        >
-          <Button
-            variant="contained"
-            color="secondary"
-            sx={{ height: 40, width: 150, marginRight: "1em" }}
-            onClick={createRoom}
-          >
-            Create Room
-          </Button>
-          <Button
-            variant="contained"
-            color="success"
-            sx={{ height: 40, width: 150 }}
-            onClick={joinRoom}
-          >
-            Join Room
-          </Button>
-          {
-            join && (
-              <Box
-                m={1}
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-              >
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault()
-                    enterRoom()
-                  }}
+                <TextField
+                  id="outlined-basic"
+                  label="username"
+                  variant="filled"
+                  autoComplete="off"
+                  color="warning"
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+                <IconButton
+                  color="white"
+                  aria-label="save username"
+                  onClick={() => setSave(true)}
                 >
-                  <TextField
-                    id="outlined-basic"
-                    label="roomid"
-                    variant="filled"
-                    autoComplete="off"
-                    color="warning"
-                    onChange={(e) => setRoomId(e.target.value)}
-                  />
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={enterRoom}
-                    sx={{marginLeft: "10px", marginTop: "10px"}}
+                  <DoneAllOutlinedIcon />
+                </IconButton>
+              </form>
+            }
+          </Box>
+          <Box
+            m={1}
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Button
+              variant="contained"
+              color="secondary"
+              sx={{ height: 40, width: 150, marginRight: "1em" }}
+              onClick={createRoom}
+            >
+              Create Room
+            </Button>
+            <Button
+              variant="contained"
+              color="success"
+              sx={{ height: 40, width: 150 }}
+              onClick={joinRoom}
+            >
+              Join Room
+            </Button>
+            {
+              join && (
+                <Box
+                  m={1}
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                >
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault()
+                      enterRoom()
+                    }}
                   >
-                    join
-                  </Button>
-                </form>
-                {error && <Typography sx={{marginLeft: "10px"}} color="red">{error}</Typography>}
-              </Box>
-            )
-          }
-        </Box>
+                    <TextField
+                      id="outlined-basic"
+                      label="roomid"
+                      variant="filled"
+                      autoComplete="off"
+                      color="warning"
+                      onChange={(e) => setRoomId(e.target.value)}
+                    />
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={enterRoom}
+                      sx={{ marginLeft: "10px", marginTop: "10px" }}
+                    >
+                      join
+                    </Button>
+                  </form>
+                  {error && <Typography sx={{ marginLeft: "10px" }} color="red">{error}</Typography>}
+                </Box>
+              )
+            }
+          </Box>
+        </div>
       </div>
-    </div>
   )
 }
 

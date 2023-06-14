@@ -32,10 +32,10 @@ const Game = () => {
       } else {
         setIsRoomExists(false)
       }
+      setLoading(false)
     }
 
     getRoomDetails()
-    setLoading(false)
   }, [])
 
   const columns = [
@@ -84,7 +84,7 @@ const Game = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {roomDetails.participants
+                    {roomDetails.participants.sort((a, b) => b.score - a.score)
                       .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                       .map((row, index) => {
                         return (
