@@ -10,6 +10,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
+import Gameplay from "../components/Gameplay";
 
 
 const Game = () => {
@@ -26,7 +27,6 @@ const Game = () => {
 
       if (response.ok) {
         const data = await response.json()
-        console.log(data)
         setIsRoomExists(true)
         setRoomDetails(data)
       } else {
@@ -39,7 +39,7 @@ const Game = () => {
   }, [])
 
   const columns = [
-    { id: 'name', label: 'Name', minWidth: "5em" },
+    { id: 'name', label: 'Name', minWidth: "4em" },
     { id: 'score', label: 'Score', minWidth: "2em" }
   ]
 
@@ -63,20 +63,18 @@ const Game = () => {
       (isRoomExists
         ?
         <>
-          <Typography variant="subtitle1">
-            Welcome to the Room, Room-ID: {roomid}
-          </Typography>
           <div style={{ display: "flex", justifyContent: "right" }}>
             <Paper sx={{ width: "25em", overflow: 'hidden' }}>
               <TableContainer sx={{ maxHeight: 440 }}>
-                <Table stickyHeader aria-label="sticky table">
+                <Table stickyHeader aria-label="sticky table" sx={{backgroundColor: "aliceblue"}}>
                   <TableHead>
                     <TableRow>
                       {columns.map((column) => (
                         <TableCell
                           key={column.id}
                           align="left"
-                          style={{ minWidth: column.minWidth }}
+                          style={{ minWidth: column.minWidth, fontWeight: "bolder" }}
+                          sx={{backgroundColor: "aliceblue"}}
                         >
                           {column.label}
                         </TableCell>
@@ -113,9 +111,11 @@ const Game = () => {
                 page={page}
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
+                sx={{backgroundColor: "aliceblue"}}
               />
             </Paper>
           </div>
+          <Gameplay />
         </>
         :
         <Alert severity="error" variant="subtitle1">
