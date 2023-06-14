@@ -138,7 +138,10 @@ const Home = () => {
                 <IconButton
                   color="white"
                   aria-label="save username"
-                  onClick={() => setSave(true)}
+                  onClick={() => {
+                    setSave(true)
+                    window.localStorage.setItem('username', username)
+                  }}
                   sx={{ marginTop: "10px" }}
                 >
                   <DoneAllOutlinedIcon />

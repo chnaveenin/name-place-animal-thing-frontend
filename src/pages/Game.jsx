@@ -27,6 +27,7 @@ const Game = () => {
 
       if (response.ok) {
         const data = await response.json()
+        console.log(data)
         setIsRoomExists(true)
         setRoomDetails(data)
       } else {
@@ -44,7 +45,7 @@ const Game = () => {
   ]
 
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -63,18 +64,19 @@ const Game = () => {
       (isRoomExists
         ?
         <>
-          <div style={{ display: "flex", justifyContent: "right" }}>
+          <Typography style={{ width:"100%", textAlign: "center", marginBottom: "1em" }} variant="h5">RoomID: {roomid}</Typography>
+          <div style={{ display: "flex", justifyContent: "center" }}>
             <Paper sx={{ width: "25em", overflow: 'hidden' }}>
               <TableContainer sx={{ maxHeight: 440 }}>
-                <Table stickyHeader aria-label="sticky table" sx={{backgroundColor: "aliceblue"}}>
+                <Table stickyHeader aria-label="sticky table" sx={{ backgroundColor: "aliceblue" }}>
                   <TableHead>
                     <TableRow>
                       {columns.map((column) => (
-                        <TableCell
+                        <TableCell className="tableCell"
                           key={column.id}
                           align="left"
                           style={{ minWidth: column.minWidth, fontWeight: "bolder" }}
-                          sx={{backgroundColor: "aliceblue"}}
+                          sx={{ backgroundColor: "aliceblue" }}
                         >
                           {column.label}
                         </TableCell>
@@ -90,7 +92,7 @@ const Game = () => {
                             {columns.map((column) => {
                               const value = row[column.id];
                               return (
-                                <TableCell key={column.id} align={column.align}>
+                                <TableCell className="tableCell" key={column.id} align={column.align}>
                                   {column.format && typeof value === 'number'
                                     ? column.format(value)
                                     : value}
@@ -104,14 +106,14 @@ const Game = () => {
                 </Table>
               </TableContainer>
               <TablePagination
-                rowsPerPageOptions={[10, 25, 100]}
+                rowsPerPageOptions={[5, 10, 25]}
                 component="div"
                 count={roomDetails.participants.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
-                sx={{backgroundColor: "aliceblue"}}
+                sx={{ backgroundColor: "aliceblue" }}
               />
             </Paper>
           </div>

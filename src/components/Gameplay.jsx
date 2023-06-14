@@ -1,4 +1,4 @@
-import { Box, Button, FormControl, FormHelperText, Input, InputLabel } from "@mui/material";
+import { Box, Button, FormControl, Input, InputLabel, Typography } from "@mui/material";
 import React, { useState, useEffect } from "react"
 
 const Gameplay = () => {
@@ -26,9 +26,10 @@ const Gameplay = () => {
   return (
     <>
       <Box
-        m={1}
+        m={0}
         display="flex"
-        sx={{marginBottom:"2em"}}
+        alignItems="center"
+        sx={{marginTop: "2em"}}
       >
         <Button
           variant="contained"
@@ -38,28 +39,37 @@ const Gameplay = () => {
         >
           {isGenerating ? "stop" : "start"}
         </Button>
-        {randomAlpha && <h3 style={{marginTop: "10px"}} >{randomAlpha}</h3>}
+        {randomAlpha && <Typography variant="h5" style={{ marginTop: "10px" }} >{randomAlpha}</Typography>}
       </Box>
 
-      <form style={{ display: "flex" }}>
-        <FormControl style={{marginRight: "2em"}}>
+      <form
+        style={{ display: "flex", flexDirection: "column", marginTop: "2em", justifyContent: "center" }}
+        onSubmit={(e) => e.preventDefault()}
+      >
+        <FormControl style={{ marginBottom: "1em" }}>
           <InputLabel htmlFor="name-input">Name</InputLabel>
           <Input id="name-input" />
         </FormControl>
-        <FormControl style={{marginRight: "2em"}}>
+        <FormControl style={{ marginBottom: "1em" }}>
           <InputLabel htmlFor="place-input">Place</InputLabel>
           <Input id="place-input" a />
         </FormControl>
-        <FormControl style={{marginRight: "2em"}}>
+        <FormControl style={{ marginBottom: "1em" }}>
           <InputLabel htmlFor="animal-input">Animal</InputLabel>
           <Input id="animal-input" ar />
         </FormControl>
-        <FormControl style={{marginRight: "2em"}}>
+        <FormControl style={{ marginBottom: "2em" }}>
           <InputLabel htmlFor="thing-input">Thing</InputLabel>
           <Input id="thing-input" a />
         </FormControl>
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ height: 40, width: 100 }}
+        >
+          Submit
+        </Button>
       </form>
-
     </>
   )
 };
