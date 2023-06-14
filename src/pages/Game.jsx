@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { useParams } from "react-router"
-import { Typography } from "@mui/material"
+import { Alert, Typography } from "@mui/material"
 import CircularProgress from '@mui/material/CircularProgress';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -118,9 +118,9 @@ const Game = () => {
           </div>
         </>
         :
-        <Typography variant="subtitle1">
+        <Alert severity="error" variant="subtitle1">
           No room found with room-id: {roomid}
-        </Typography>
+        </Alert>
       )
     )
   )

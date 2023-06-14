@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import { useNavigate } from "react-router";
 import {
+  Alert,
   Box,
   Button,
   CircularProgress,
@@ -18,6 +19,7 @@ const Home = () => {
   const [error, setError] = useState("")
 
   const [loading, setLoading] = useState(false)
+  const [joinloading, setJoinLoading] = useState(false)
 
   const navigate = useNavigate()
 
@@ -58,10 +60,11 @@ const Home = () => {
 
   const joinRoom = () => {
     console.log("joining room")
-    setJoin(true)
+    setJoin(!join)
   }
 
   const enterRoom = async () => {
+    setJoinLoading(true)
     const response = await fetch("http://localhost:8080/join-room/" + roomId, {
       method: "PATCH",
       body: JSON.stringify({
@@ -73,10 +76,14 @@ const Home = () => {
       }
     })
 
+    console.log("here in func")
 
     if (response.ok) {
+      console.log("here in res status")
       navigate("/" + roomId)
     } else {
+      console.log(404)
+      setJoinLoading(false)
       setError("no room found")
     }
   }
@@ -132,6 +139,7 @@ const Home = () => {
                   color="white"
                   aria-label="save username"
                   onClick={() => setSave(true)}
+                  sx={{ marginTop: "10px" }}
                 >
                   <DoneAllOutlinedIcon />
                 </IconButton>
@@ -173,6 +181,7 @@ const Home = () => {
                       e.preventDefault()
                       enterRoom()
                     }}
+                    style={{ marginRight: "0.5em" }}
                   >
                     <TextField
                       id="outlined-basic"
@@ -191,7 +200,8 @@ const Home = () => {
                       join
                     </Button>
                   </form>
-                  {error && <Typography sx={{ marginLeft: "10px" }} color="red">{error}</Typography>}
+                  {joinloading && <CircularProgress />}
+                  {error && <Alert severity="error">{error}</Alert>}
                 </Box>
               )
             }
