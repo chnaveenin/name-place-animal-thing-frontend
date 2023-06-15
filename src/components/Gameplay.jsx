@@ -15,7 +15,7 @@ const Gameplay = () => {
 
   useEffect(() => {
     if (isGenerating) {
-      intervalId = setInterval(generateRandomAlphabet, 100);
+      intervalId = setInterval(generateRandomAlphabet, 50);
     }
 
     return () => {

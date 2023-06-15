@@ -1,4 +1,5 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
+import { useSocketContext } from "../hooks/useSocketContext";
 import { useNavigate } from "react-router";
 import {
   Alert,
@@ -12,6 +13,8 @@ import {
 import DoneAllOutlinedIcon from '@mui/icons-material/DoneAllOutlined';
 
 const Home = () => {
+  const socket = useSocketContext();
+
   const [username, setUsername] = useState("")
   const [save, setSave] = useState(false)
   const [join, setJoin] = useState(false)
@@ -21,72 +24,9 @@ const Home = () => {
   const [loading, setLoading] = useState(false)
   const [joinloading, setJoinLoading] = useState(false)
 
+  const [joinRoom, setJoinRoom] = useState(false);
+
   const navigate = useNavigate()
-
-  const createRoom = async () => {
-    setLoading(true)
-    console.log("creating room")
-    setJoin(false)
-    while (true) {
-      const temp = generateRandomString(6)
-      console.log(temp)
-      const response = await fetch("http://localhost:8080/room/" + temp, {
-        method: "GET"
-      })
-
-      if (!response.ok) {
-        setRoomId(temp)
-        console.log(roomId)
-        const response = await fetch("http://localhost:8080/create-room", {
-          method: "POST",
-          body: JSON.stringify({
-            roomid: temp,
-            participants: [{
-              name: username,
-              score: 0
-            }]
-          }),
-          headers: {
-            "Content-Type": "application/json"
-          }
-        })
-        if (response.ok) {
-          navigate("/" + temp)
-        }
-        break
-      }
-    }
-  }
-
-  const joinRoom = () => {
-    console.log("joining room")
-    setJoin(!join)
-  }
-
-  const enterRoom = async () => {
-    setJoinLoading(true)
-    const response = await fetch("http://localhost:8080/join-room/" + roomId, {
-      method: "PATCH",
-      body: JSON.stringify({
-        name: username,
-        score: 0
-      }),
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-
-    console.log("here in func")
-
-    if (response.ok) {
-      console.log("here in res status")
-      navigate("/" + roomId)
-    } else {
-      console.log(404)
-      setJoinLoading(false)
-      setError("no room found")
-    }
-  }
 
   function generateRandomString(length) {
     let result = '';
@@ -97,6 +37,62 @@ const Home = () => {
     }
     return result;
   }
+
+  const createRoom = async () => {
+    setJoin(false);
+    setJoinRoom(false);
+    setLoading(true);
+    console.log("creating room");
+
+    const temp = generateRandomString(6);
+    console.log(temp);
+
+    socket.emit("check_room", { room: temp });
+  };
+
+  useEffect(() => {
+    socket.on("generate_new_roomid", () => {
+      const newRoomId = generateRandomString(6);
+      console.log(newRoomId);
+      socket.emit("check_room", { room: newRoomId });
+    });
+
+    socket.on("roomid_is_valid", (data) => {
+      setRoomId(data.room);
+      console.log("room is valid", data.room);
+      enterRoom(data.room);
+    });
+
+    socket.on("room_exists", () => {
+      console.log("room exists", roomId);
+      enterRoom(roomId);
+    });
+
+    socket.on("room_not_found", () => {
+      setError("room not found");
+    });
+
+    return (() => {
+      socket.off("roomid_is_valid");
+      socket.off("generate_new_roomid");
+      socket.off("room_exists");
+      socket.off("room_not_found");
+
+    })
+  }, [socket]);
+
+  useEffect(() => {
+    console.log(joinRoom);
+  }, [joinRoom]);
+
+  const enterRoom = async (room) => {
+    setJoinLoading(true);
+    socket.emit("join_room", { room, username });
+    setJoinLoading(false);
+    setLoading(false);
+
+    navigate("/" + room);
+  };
 
   return (
     loading
@@ -140,7 +136,6 @@ const Home = () => {
                   aria-label="save username"
                   onClick={() => {
                     setSave(true)
-                    window.localStorage.setItem('username', username)
                   }}
                   sx={{ marginTop: "10px" }}
                 >
@@ -167,9 +162,12 @@ const Home = () => {
               variant="contained"
               color="success"
               sx={{ height: 40, width: 150 }}
-              onClick={joinRoom}
+              onClick={() => {
+                setJoin(!join);
+                setJoinRoom(true)
+              }}
             >
-              Join Room
+              {joinRoom && "Join Room"}
             </Button>
             {
               join && (
@@ -197,8 +195,8 @@ const Home = () => {
                     <Button
                       variant="contained"
                       color="primary"
-                      onClick={enterRoom}
                       sx={{ marginLeft: "10px", marginTop: "10px" }}
+                      onClick={() => enterRoom(roomId)}
                     >
                       join
                     </Button>

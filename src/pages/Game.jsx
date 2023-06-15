@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { useParams } from "react-router"
-import { Alert, Typography } from "@mui/material"
+import { Alert, Snackbar, Typography } from "@mui/material"
 import CircularProgress from '@mui/material/CircularProgress';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -11,33 +11,44 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Gameplay from "../components/Gameplay";
+import { useSocketContext } from "../hooks/useSocketContext";
 
 
 const Game = () => {
-  const { roomid } = useParams()
-  const [loading, setLoading] = useState(true)
-  const [isRoomExists, setIsRoomExists] = useState(false)
-  const [roomDetails, setRoomDetails] = useState()
+  const socket = useSocketContext();
+
+  const { roomid } = useParams();
+  const [isRoomExists, setIsRoomExists] = useState(true);
+  const [people, setPeople] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [welcome, setWelcome] = useState("");
 
   useEffect(() => {
-    const getRoomDetails = async () => {
-      const response = await fetch("http://localhost:8080/room/" + roomid, {
-        method: "GET"
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        console.log(data)
-        setIsRoomExists(true)
-        setRoomDetails(data)
-      } else {
-        setIsRoomExists(false)
-      }
-      setLoading(false)
+    setLoading(true);
+    const getPeople = async () => {
+      console.log(("here"));
+      await socket.on("peopleInRoom", (data) => {
+        console.log("peopleData", data);
+        setPeople(data);
+        setIsRoomExists(true);
+      });
+      setLoading(false);
     }
 
-    getRoomDetails()
-  }, [])
+    getPeople();
+
+    socket.on("receive_message", (data) => {
+      if (data.author === "System") {
+        setWelcome(data.message);
+        console.log(data.message);
+      }
+    });
+
+    return () => {
+      socket.off("peopleInRoom");
+      socket.off("receive_message");
+    }
+  }, [socket])
 
   const columns = [
     { id: 'name', label: 'Name', minWidth: "4em" },
@@ -84,7 +95,7 @@ const Game = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {roomDetails.participants.sort((a, b) => b.score - a.score)
+                    {people.sort((a, b) => b.score - a.score)
                       .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                       .map((row, index) => {
                         return (
@@ -108,7 +119,7 @@ const Game = () => {
               <TablePagination
                 rowsPerPageOptions={[5, 10, 25]}
                 component="div"
-                count={roomDetails.participants.length}
+                count={people.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onPageChange={handleChangePage}
@@ -118,6 +129,12 @@ const Game = () => {
             </Paper>
           </div>
           <Gameplay />
+          {welcome &&
+            <Snackbar
+              autoHideDuration={3000}
+              message={welcome}
+            />
+          }
         </>
         :
         <Alert severity="error" variant="subtitle1">
