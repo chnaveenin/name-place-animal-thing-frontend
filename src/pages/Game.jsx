@@ -13,7 +13,6 @@ import TableRow from '@mui/material/TableRow';
 import Gameplay from "../components/Gameplay";
 import { useSocketContext } from "../hooks/useSocketContext";
 
-
 const Game = () => {
   const socket = useSocketContext();
 
@@ -22,6 +21,12 @@ const Game = () => {
   const [people, setPeople] = useState([]);
   const [loading, setLoading] = useState(false);
   const [welcome, setWelcome] = useState("");
+
+  const [open, setOpen] = React.useState(false);
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -41,6 +46,7 @@ const Game = () => {
       if (data.author === "System") {
         setWelcome(data.message);
         console.log(data.message);
+        setOpen(true);
       }
     });
 
@@ -75,7 +81,7 @@ const Game = () => {
       (isRoomExists
         ?
         <>
-          <Typography style={{ width:"100%", textAlign: "center", marginBottom: "1em" }} variant="h5">RoomID: {roomid}</Typography>
+          <Typography style={{ width: "100%", textAlign: "center", marginBottom: "1em" }} variant="h5">RoomID: {roomid}</Typography>
           <div style={{ display: "flex", justifyContent: "center" }}>
             <Paper sx={{ width: "25em", overflow: 'hidden' }}>
               <TableContainer sx={{ maxHeight: 440 }}>
@@ -131,9 +137,18 @@ const Game = () => {
           <Gameplay />
           {welcome &&
             <Snackbar
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right'}}
+              open={open}
               autoHideDuration={3000}
-              message={welcome}
-            />
+              onClose={handleClose}
+            >
+              <Alert 
+                severity="info" 
+                sx={{ width: '20' }}
+              >
+                {welcome}
+              </Alert>
+            </Snackbar>
           }
         </>
         :
