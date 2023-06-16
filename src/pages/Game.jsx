@@ -22,6 +22,7 @@ const Game = () => {
   const [loading, setLoading] = useState(false);
   const [welcome, setWelcome] = useState("");
 
+  const [person, setPerson] = useState();
   const [open, setOpen] = React.useState(false);
 
   const handleClose = () => {
@@ -36,6 +37,7 @@ const Game = () => {
         console.log("peopleData", data);
         setPeople(data);
         setIsRoomExists(true);
+        setPerson(data.find((p) => p.socketId === socket.id))
       });
       setLoading(false);
     }
@@ -134,7 +136,7 @@ const Game = () => {
               />
             </Paper>
           </div>
-          <Gameplay />
+          <Gameplay isTurn={person?.isTurn}/>
           {welcome &&
             <Snackbar
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right'}}

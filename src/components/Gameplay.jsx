@@ -1,7 +1,7 @@
 import { Box, Button, FormControl, Input, InputLabel, Typography } from "@mui/material";
 import React, { useState, useEffect } from "react"
 
-const Gameplay = () => {
+const Gameplay = ({ isTurn }) => {
   const [randomAlpha, setRandomAlpha] = useState("")
 
   function generateRandomAlphabet() {
@@ -23,25 +23,32 @@ const Gameplay = () => {
     };
   }, [isGenerating]);
 
-  const [person, setPerson] = useState();
-
   return (
     <>
+
       <Box
         m={0}
         display="flex"
         alignItems="center"
-        sx={{marginTop: "2em"}}
+        sx={{ marginTop: "2em" }}
       >
-        <Button
-          variant="contained"
-          color="warning"
-          sx={{ height: 40, minWidth: 100, marginRight: "1em" }}
-          onClick={() => setIsGenerating(!isGenerating)}
-        >
-          {isGenerating ? "stop" : "start"}
-        </Button>
-        {randomAlpha && <Typography variant="h5" style={{ marginTop: "10px" }} >{randomAlpha}</Typography>}
+        {isTurn ?
+          <>
+            <Button
+              variant="contained"
+              color="warning"
+              sx={{ height: 40, minWidth: 100, marginRight: "1em" }}
+              onClick={() => setIsGenerating(!isGenerating)}
+            >
+              {isGenerating ? "stop" : "start"}
+            </Button>
+            {randomAlpha && <Typography variant="h5" style={{ marginTop: "10px" }} >{randomAlpha}</Typography>}
+          </>
+
+          :
+          <Typography>
+            This is not your turn
+          </Typography>}
       </Box>
 
       <form
