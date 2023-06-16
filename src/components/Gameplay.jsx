@@ -9,6 +9,11 @@ const Gameplay = ({ isTurn, room }) => {
   const [alphabet, setAlphabet] = useState("");
   const [user, setUser] = useState("");
 
+  const [name, setName] = useState("");
+  const [place, setPlace] = useState("");
+  const [animal, setAnimal] = useState("");
+  const [thing, setThing] = useState("");
+
   function generateRandomAlphabet() {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const charactersLength = characters.length;
@@ -45,10 +50,27 @@ const Gameplay = ({ isTurn, room }) => {
           message: randomAlpha
       });
       setAlphabet(randomAlpha);
+      setIsGenerating(false);
       setGenerated(true);
-      setUser('');
       setRandomAlpha('');
     }
+  };
+
+  const submitHandler = (e) => {
+    e.preventDefault();
+
+    socket.emit("calculate_scores", {
+      name, place, animal, thing
+    });
+
+
+    console.log("changing turn");
+    socket.emit("change_turn", {room});
+    setUser('');
+    setRandomAlpha('');
+    setAlphabet('');
+    setIsGenerating(false);
+    setGenerated(false);
   };
 
   return (
@@ -85,28 +107,29 @@ const Gameplay = ({ isTurn, room }) => {
 
       <form
         style={{ display: "flex", flexDirection: "column", marginTop: "2em", justifyContent: "center" }}
-        onSubmit={(e) => e.preventDefault()}
+        onSubmit={submitHandler}
       >
         <FormControl style={{ marginBottom: "1em" }}>
           <InputLabel htmlFor="name-input">Name</InputLabel>
-          <Input id="name-input" />
+          <Input id="name-input" onChange={(e)=>setName(e.target.value)}/>
         </FormControl>
         <FormControl style={{ marginBottom: "1em" }}>
           <InputLabel htmlFor="place-input">Place</InputLabel>
-          <Input id="place-input" a />
+          <Input id="place-input" onChange={(e)=>setPlace(e.target.value)}/>
         </FormControl>
         <FormControl style={{ marginBottom: "1em" }}>
           <InputLabel htmlFor="animal-input">Animal</InputLabel>
-          <Input id="animal-input" ar />
+          <Input id="animal-input" onChange={(e)=>setAnimal(e.target.value)}/>
         </FormControl>
         <FormControl style={{ marginBottom: "2em" }}>
           <InputLabel htmlFor="thing-input">Thing</InputLabel>
-          <Input id="thing-input" a />
+          <Input id="thing-input" onChange={(e)=>setThing(e.target.value)}/>
         </FormControl>
         <Button
           variant="contained"
           color="primary"
           sx={{ height: 40, width: 100, margin: "auto" }}
+          onClick={submitHandler}
         >
           Submit
         </Button>

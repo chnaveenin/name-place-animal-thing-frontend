@@ -54,7 +54,7 @@ const Game = () => {
 
     return () => {
       socket.off("peopleInRoom");
-      socket.off("receive_message");
+      socket.off("welcome_message");
     }
   }, [socket])
 
