@@ -1,8 +1,13 @@
-import { Box, Button, FormControl, Input, InputLabel, Typography } from "@mui/material";
+import { Alert, Box, Button, FormControl, Input, InputLabel, Typography } from "@mui/material";
 import React, { useState, useEffect } from "react"
+import { useSocketContext } from "../hooks/useSocketContext";
 
-const Gameplay = ({ isTurn }) => {
+const Gameplay = ({ isTurn, room }) => {
+  const socket = useSocketContext();
+
   const [randomAlpha, setRandomAlpha] = useState("")
+  const [alphabet, setAlphabet] = useState("");
+  const [user, setUser] = useState("");
 
   function generateRandomAlphabet() {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -11,6 +16,7 @@ const Gameplay = ({ isTurn }) => {
   }
 
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generated, setGenerated] = useState(false);
   let intervalId;
 
   useEffect(() => {
@@ -18,14 +24,35 @@ const Gameplay = ({ isTurn }) => {
       intervalId = setInterval(generateRandomAlphabet, 50);
     }
 
+    socket.on("receive_message", (data) => {
+      console.log(data.message, data.name);
+      setAlphabet(data.message);
+      setUser(data.name);
+    });
+
     return () => {
-      clearInterval(intervalId); // Clear the interval when the component unmounts or isGenerating is set to false
+      clearInterval(intervalId);
+      socket.off("receive_message");
     };
   }, [isGenerating]);
 
+  const alphabetGenerated = () => {
+    setIsGenerating(!isGenerating);
+    if (isGenerating) {
+      socket.emit("send_message", {
+          room: room,
+          socketID: socket.id,
+          message: randomAlpha
+      });
+      setAlphabet(randomAlpha);
+      setGenerated(true);
+      setUser('');
+      setRandomAlpha('');
+    }
+  };
+
   return (
     <>
-
       <Box
         m={0}
         display="flex"
@@ -33,22 +60,27 @@ const Gameplay = ({ isTurn }) => {
         sx={{ marginTop: "2em" }}
       >
         {isTurn ?
+          generated ?
+            <Alert severity="info">
+              {`Generated ${alphabet}`}
+            </Alert>
+            :
           <>
             <Button
               variant="contained"
               color="warning"
               sx={{ height: 40, minWidth: 100, marginRight: "1em" }}
-              onClick={() => setIsGenerating(!isGenerating)}
+              onClick={alphabetGenerated}
             >
               {isGenerating ? "stop" : "start"}
             </Button>
             {randomAlpha && <Typography variant="h5" style={{ marginTop: "10px" }} >{randomAlpha}</Typography>}
           </>
-
           :
-          <Typography>
-            This is not your turn
-          </Typography>}
+          <Alert severity="info">
+            {alphabet ? `${user} generated ${alphabet}`: "This is not your turn"}
+          </Alert>
+        }
       </Box>
 
       <form

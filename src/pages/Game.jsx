@@ -44,7 +44,7 @@ const Game = () => {
 
     getPeople();
 
-    socket.on("receive_message", (data) => {
+    socket.on("welcome_message", (data) => {
       if (data.author === "System") {
         setWelcome(data.message);
         console.log(data.message);
@@ -136,7 +136,7 @@ const Game = () => {
               />
             </Paper>
           </div>
-          <Gameplay isTurn={person?.isTurn}/>
+          <Gameplay room={roomid} isTurn={person?.isTurn}/>
           {welcome &&
             <Snackbar
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right'}}
