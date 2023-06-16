@@ -35,9 +35,18 @@ const Gameplay = ({ isTurn, room }) => {
       setUser(data.name);
     });
 
+    socket.on("change_turn", ()=> {
+      setUser('');
+      setRandomAlpha('');
+      setAlphabet('');
+      setIsGenerating(false);
+      setGenerated(false);
+    });
+
     return () => {
       clearInterval(intervalId);
       socket.off("receive_message");
+      socket.off("change_turn");
     };
   }, [isGenerating]);
 
@@ -58,11 +67,6 @@ const Gameplay = ({ isTurn, room }) => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-
-    socket.emit("calculate_scores", {
-      name, place, animal, thing
-    });
-
 
     console.log("changing turn");
     socket.emit("change_turn", {room});
