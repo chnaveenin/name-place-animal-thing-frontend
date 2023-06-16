@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { useSocketContext } from "../hooks/useSocketContext";
 import { useNavigate } from "react-router";
 import {
@@ -16,6 +16,13 @@ const Home = () => {
   const socket = useSocketContext();
 
   const [username, setUsername] = useState("")
+
+  const usernameRef = useRef(username);
+
+  useEffect(() => {
+    usernameRef.current = username;
+  }, [username]);
+
   const [save, setSave] = useState(false)
   const [join, setJoin] = useState(false)
   const [roomId, setRoomId] = useState("")
@@ -87,7 +94,8 @@ const Home = () => {
 
   const enterRoom = async (room) => {
     setJoinLoading(true);
-    socket.emit("join_room", { room, username });
+    socket.emit("join_room", { room, username: usernameRef.current });
+    console.log("join_room_info:", room, "username:", usernameRef.current);
     setJoinLoading(false);
     setLoading(false);
 
@@ -167,7 +175,7 @@ const Home = () => {
                 setJoinRoom(true)
               }}
             >
-              {joinRoom && "Join Room"}
+              Join Room
             </Button>
             {
               join && (
@@ -180,7 +188,7 @@ const Home = () => {
                   <form
                     onSubmit={(e) => {
                       e.preventDefault()
-                      enterRoom()
+                      enterRoom(roomId)
                     }}
                     style={{ marginRight: "0.5em" }}
                   >

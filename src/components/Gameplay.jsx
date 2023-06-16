@@ -23,6 +23,8 @@ const Gameplay = () => {
     };
   }, [isGenerating]);
 
+  const [person, setPerson] = useState();
+
   return (
     <>
       <Box
@@ -65,7 +67,7 @@ const Gameplay = () => {
         <Button
           variant="contained"
           color="primary"
-          sx={{ height: 40, width: 100 }}
+          sx={{ height: 40, width: 100, margin: "auto" }}
         >
           Submit
         </Button>
