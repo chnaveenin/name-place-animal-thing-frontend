@@ -82,7 +82,7 @@ const Gameplay = ({ isTurn, room, turn }) => {
     if (isGenerating) {
       socket.emit("send_alphabet", {
         room: room,
-        alphabet: randomAlpha
+        alphabet: randomAlpha.toLowerCase()
       });
       setAlphabet(randomAlpha);
       setIsGenerating(false);
@@ -96,10 +96,10 @@ const Gameplay = ({ isTurn, room, turn }) => {
     e?.preventDefault();
 
     const submission = {
-      name,
-      place,
-      animal,
-      thing
+      name: name.toLowerCase(),
+      place: place.toLowerCase(),
+      animal: animal.toLowerCase(),
+      thing: thing.toLowerCase()
     }
 
     console.log("submitting");
