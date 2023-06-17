@@ -55,7 +55,6 @@ const Gameplay = ({ isTurn, room }) => {
     if (isGenerating) {
       socket.emit("send_message", {
           room: room,
-          socketID: socket.id,
           message: randomAlpha
       });
       setAlphabet(randomAlpha);
