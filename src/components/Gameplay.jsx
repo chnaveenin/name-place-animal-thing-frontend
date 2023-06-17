@@ -106,6 +106,14 @@ const Gameplay = ({ isTurn, room }) => {
             {alphabet ? `${user} generated ${alphabet}`: "This is not your turn"}
           </Alert>
         }
+        {alphabet &&
+          <Alert 
+            severity="success"
+            sx={{marginLeft: "auto"}}
+          >
+            Alphabet: {alphabet}
+          </Alert>
+        }
       </Box>
 
       <form
