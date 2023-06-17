@@ -2,8 +2,12 @@ import React, { useEffect } from "react";
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { Alert } from "@mui/material";
 
-const Timer = ({ seconds, setSeconds }) => {
+const Timer = ({ seconds, setSeconds, onTimerEnd}) => {
   useEffect(() => {
+    if (seconds === 0) {
+      onTimerEnd();
+    }
+
     const intervalId = setInterval(() => {
       setSeconds((prevSeconds) => prevSeconds - 1);
     }, 1000);
@@ -11,7 +15,7 @@ const Timer = ({ seconds, setSeconds }) => {
     return () => {
       clearInterval(intervalId);
     };
-  }, []);
+  }, [seconds]);
 
   return seconds > 0 && (
     <Alert

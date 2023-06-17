@@ -16,7 +16,7 @@ const Gameplay = ({ isTurn, room }) => {
   const [animal, setAnimal] = useState("");
   const [thing, setThing] = useState("");
 
-  const [seconds, setSeconds] = useState(120);
+  const [seconds, setSeconds] = useState(10);
 
   function generateRandomAlphabet() {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -72,7 +72,7 @@ const Gameplay = ({ isTurn, room }) => {
   };
 
   const submitHandler = (e) => {
-    e.preventDefault();
+    e?.preventDefault();
 
     console.log("changing turn");
     socket.emit("change_turn", {room});
@@ -112,7 +112,7 @@ const Gameplay = ({ isTurn, room }) => {
               >
                 {isGenerating ? "stop" : "start"}
               </Button>
-              {randomAlpha && <Typography variant="h5" style={{ marginTop: "10px" }} >{randomAlpha}</Typography>}
+              {randomAlpha && <Typography variant="h5" style={{ marginTop: "10px", width: "1em"}} >{randomAlpha}</Typography>}
             </>
           :
           <Alert 
@@ -134,7 +134,7 @@ const Gameplay = ({ isTurn, room }) => {
             >
               {alphabet}
             </Alert>
-            <Timer seconds={seconds} setSeconds={setSeconds} />
+            <Timer seconds={seconds} setSeconds={setSeconds} onTimerEnd={submitHandler} />
           </Box>
         }
       </Box>
