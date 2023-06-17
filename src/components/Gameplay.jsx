@@ -33,9 +33,16 @@ const Gameplay = ({ isTurn, room }) => {
       intervalId = setInterval(generateRandomAlphabet, 50);
     }
 
-    socket.on("receive_message", (data) => {
-      console.log(data.message, data.name);
-      setAlphabet(data.message);
+    return () => {
+      clearInterval(intervalId);
+    }
+    
+  }, [isGenerating]);
+
+  useEffect(() => {
+    socket.on("receive_alphabet", (data) => {
+      console.log(data.alphabet, data.name);
+      setAlphabet(data.alphabet);
       setSeconds(120);
       setUser(data.name);
     });
@@ -46,22 +53,31 @@ const Gameplay = ({ isTurn, room }) => {
       setAlphabet('');
       setIsGenerating(false);
       setGenerated(false);
-      setSeconds(0);
+      setSeconds(-1);
+    });
+
+    socket.on("first_submit", () => {
+      setSeconds(30);
+    });
+
+    socket.on("final_submit", () => {
+      socket.emit("change_turn", {room});
     });
 
     return () => {
-      clearInterval(intervalId);
-      socket.off("receive_message");
+      socket.off("receive_alphabet");
       socket.off("change_turn");
+      socket.off("first_submit");
+      socket.off("final_submit");
     };
-  }, [isGenerating]);
+  }, []);
 
   const alphabetGenerated = () => {
     setIsGenerating(!isGenerating);
     if (isGenerating) {
-      socket.emit("send_message", {
+      socket.emit("send_alphabet", {
           room: room,
-          message: randomAlpha
+          alphabet: randomAlpha
       });
       setAlphabet(randomAlpha);
       setIsGenerating(false);
@@ -74,14 +90,25 @@ const Gameplay = ({ isTurn, room }) => {
   const submitHandler = (e) => {
     e?.preventDefault();
 
-    console.log("changing turn");
-    socket.emit("change_turn", {room});
-    setUser('');
-    setRandomAlpha('');
-    setAlphabet('');
-    setIsGenerating(false);
-    setGenerated(false);
-    setSeconds(0);
+    const submission={
+        name, 
+        place, 
+        animal, 
+        thing
+      }
+
+    console.log("submitting");
+    socket.emit("submit", {
+      room, 
+      submission
+    });
+    
+    setName('');
+    setPlace('');
+    setAnimal('');
+    setThing('');
+
+    setSeconds(-1);
   };
 
   return (
@@ -145,24 +172,25 @@ const Gameplay = ({ isTurn, room }) => {
       >
         <FormControl style={{ marginBottom: "1em" }}>
           <InputLabel htmlFor="name-input">Name</InputLabel>
-          <Input id="name-input" onChange={(e)=>setName(e.target.value)}/>
+          <Input id="name-input" onChange={(e)=>setName(e.target.value)} value={name} disabled={alphabet === ''}/>
         </FormControl>
         <FormControl style={{ marginBottom: "1em" }}>
           <InputLabel htmlFor="place-input">Place</InputLabel>
-          <Input id="place-input" onChange={(e)=>setPlace(e.target.value)}/>
+          <Input id="place-input" onChange={(e)=>setPlace(e.target.value)} value={place} disabled={alphabet === ''}/>
         </FormControl>
         <FormControl style={{ marginBottom: "1em" }}>
           <InputLabel htmlFor="animal-input">Animal</InputLabel>
-          <Input id="animal-input" onChange={(e)=>setAnimal(e.target.value)}/>
+          <Input id="animal-input" onChange={(e)=>setAnimal(e.target.value)} value={animal} disabled={alphabet === ''}/>
         </FormControl>
         <FormControl style={{ marginBottom: "2em" }}>
           <InputLabel htmlFor="thing-input">Thing</InputLabel>
-          <Input id="thing-input" onChange={(e)=>setThing(e.target.value)}/>
+          <Input id="thing-input" onChange={(e)=>setThing(e.target.value)} value={thing} disabled={alphabet === ''}/>
         </FormControl>
         <Button
           variant="contained"
           color="primary"
           sx={{ height: 40, width: 100, margin: "auto" }}
+          disabled={alphabet === ''}
           onClick={submitHandler}
         >
           Submit
