@@ -4,7 +4,7 @@ import { useSocketContext } from "../hooks/useSocketContext";
 import CrisisAlertIcon from '@mui/icons-material/CrisisAlert';
 import Timer from "./Timer";
 
-const Gameplay = ({ isTurn, room }) => {
+const Gameplay = ({ isTurn, room, turn }) => {
   const socket = useSocketContext();
 
   const [randomAlpha, setRandomAlpha] = useState("")
@@ -16,7 +16,8 @@ const Gameplay = ({ isTurn, room }) => {
   const [animal, setAnimal] = useState("");
   const [thing, setThing] = useState("");
 
-  const [seconds, setSeconds] = useState(10);
+  const [seconds, setSeconds] = useState(120);
+  const [submitted, setSubmitted] = useState(false);
 
   function generateRandomAlphabet() {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -36,7 +37,7 @@ const Gameplay = ({ isTurn, room }) => {
     return () => {
       clearInterval(intervalId);
     }
-    
+
   }, [isGenerating]);
 
   useEffect(() => {
@@ -47,21 +48,25 @@ const Gameplay = ({ isTurn, room }) => {
       setUser(data.name);
     });
 
-    socket.on("change_turn", ()=> {
+    socket.on("change_turn", () => {
       setUser('');
       setRandomAlpha('');
       setAlphabet('');
       setIsGenerating(false);
       setGenerated(false);
       setSeconds(-1);
+      setSubmitted(false);
     });
 
     socket.on("first_submit", () => {
-      setSeconds(30);
+      if (seconds > 30) {
+        console.log("setting seconds 30");
+        setSeconds(30);
+      }
     });
 
     socket.on("final_submit", () => {
-      socket.emit("change_turn", {room});
+      socket.emit("change_turn", { room });
     });
 
     return () => {
@@ -76,8 +81,8 @@ const Gameplay = ({ isTurn, room }) => {
     setIsGenerating(!isGenerating);
     if (isGenerating) {
       socket.emit("send_alphabet", {
-          room: room,
-          alphabet: randomAlpha
+        room: room,
+        alphabet: randomAlpha
       });
       setAlphabet(randomAlpha);
       setIsGenerating(false);
@@ -90,25 +95,26 @@ const Gameplay = ({ isTurn, room }) => {
   const submitHandler = (e) => {
     e?.preventDefault();
 
-    const submission={
-        name, 
-        place, 
-        animal, 
-        thing
-      }
+    const submission = {
+      name,
+      place,
+      animal,
+      thing
+    }
 
     console.log("submitting");
     socket.emit("submit", {
-      room, 
+      room,
       submission
     });
-    
+
     setName('');
     setPlace('');
     setAnimal('');
     setThing('');
 
     setSeconds(-1);
+    setSubmitted(true);
   };
 
   return (
@@ -124,78 +130,82 @@ const Gameplay = ({ isTurn, room }) => {
           alignItems="center"
           justifyContent="center"
         >
-        {isTurn ?
-          generated ?
-            <Alert severity="info">
-              {`Generated ${alphabet}`}
-            </Alert>
+          {isTurn ?
+            generated ?
+              <Alert severity="info">
+                {`Generated ${alphabet}`}
+              </Alert>
+              :
+              <>
+                <Button
+                  variant="contained"
+                  color="warning"
+                  sx={{ height: 40, minWidth: 100, marginRight: "1em" }}
+                  onClick={alphabetGenerated}
+                >
+                  {isGenerating ? "stop" : "start"}
+                </Button>
+                {randomAlpha && <Typography variant="h5" style={{ marginTop: "10px", width: "1em" }} >{randomAlpha}</Typography>}
+              </>
             :
-            <>
-              <Button
-                variant="contained"
-                color="warning"
-                sx={{ height: 40, minWidth: 100, marginRight: "1em" }}
-                onClick={alphabetGenerated}
-              >
-                {isGenerating ? "stop" : "start"}
-              </Button>
-              {randomAlpha && <Typography variant="h5" style={{ marginTop: "10px", width: "1em"}} >{randomAlpha}</Typography>}
-            </>
-          :
-          <Alert 
-            severity="info"
-          >
-            {alphabet ? `${user} generated ${alphabet}`: "This is not your turn"}
-          </Alert>
-        }
-        </Box>
-        {alphabet &&
-          <Box
-            display="flex"
-            m={1}
-          >
-            <Alert 
-              icon={<CrisisAlertIcon />}
-              severity="success"
-              sx={{marginRight: "auto"}}
+            <Alert
+              severity="info"
             >
-              {alphabet}
+              {alphabet ? `${user} generated ${alphabet}` : `${turn} is generating`}
             </Alert>
-            <Timer seconds={seconds} setSeconds={setSeconds} onTimerEnd={submitHandler} />
-          </Box>
+          }
+        </Box>
+        {alphabet && !submitted &&
+          <>
+            <Box
+              display="flex"
+              m={1}
+            >
+              <Alert
+                icon={<CrisisAlertIcon />}
+                severity="success"
+                sx={{ marginRight: "auto" }}
+              >
+                {alphabet}
+              </Alert>
+              <Timer seconds={seconds} setSeconds={setSeconds} onTimerEnd={submitHandler} />
+            </Box>
+            {!submitted &&
+              <form
+                style={{ display: "flex", flexDirection: "column", marginTop: "2em", justifyContent: "center" }}
+                onSubmit={submitHandler}
+              >
+                <FormControl style={{ marginBottom: "1em" }}>
+                  <InputLabel htmlFor="name-input">Name</InputLabel>
+                  <Input id="name-input" onChange={(e) => setName(e.target.value)} value={name} disabled={alphabet === ''} />
+                </FormControl>
+                <FormControl style={{ marginBottom: "1em" }}>
+                  <InputLabel htmlFor="place-input">Place</InputLabel>
+                  <Input id="place-input" onChange={(e) => setPlace(e.target.value)} value={place} disabled={alphabet === ''} />
+                </FormControl>
+                <FormControl style={{ marginBottom: "1em" }}>
+                  <InputLabel htmlFor="animal-input">Animal</InputLabel>
+                  <Input id="animal-input" onChange={(e) => setAnimal(e.target.value)} value={animal} disabled={alphabet === ''} />
+                </FormControl>
+                <FormControl style={{ marginBottom: "2em" }}>
+                  <InputLabel htmlFor="thing-input">Thing</InputLabel>
+                  <Input id="thing-input" onChange={(e) => setThing(e.target.value)} value={thing} disabled={alphabet === ''} />
+                </FormControl>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ height: 40, width: 100, margin: "auto" }}
+                  disabled={alphabet === ''}
+                  onClick={submitHandler}
+                >
+                  Submit
+                </Button>
+              </form>
+            }
+          </>
         }
+        {submitted && <Alert sx={{position: "absolute", bottom: "1em"}}>Submitted</Alert>}
       </Box>
-
-      <form
-        style={{ display: "flex", flexDirection: "column", marginTop: "2em", justifyContent: "center" }}
-        onSubmit={submitHandler}
-      >
-        <FormControl style={{ marginBottom: "1em" }}>
-          <InputLabel htmlFor="name-input">Name</InputLabel>
-          <Input id="name-input" onChange={(e)=>setName(e.target.value)} value={name} disabled={alphabet === ''}/>
-        </FormControl>
-        <FormControl style={{ marginBottom: "1em" }}>
-          <InputLabel htmlFor="place-input">Place</InputLabel>
-          <Input id="place-input" onChange={(e)=>setPlace(e.target.value)} value={place} disabled={alphabet === ''}/>
-        </FormControl>
-        <FormControl style={{ marginBottom: "1em" }}>
-          <InputLabel htmlFor="animal-input">Animal</InputLabel>
-          <Input id="animal-input" onChange={(e)=>setAnimal(e.target.value)} value={animal} disabled={alphabet === ''}/>
-        </FormControl>
-        <FormControl style={{ marginBottom: "2em" }}>
-          <InputLabel htmlFor="thing-input">Thing</InputLabel>
-          <Input id="thing-input" onChange={(e)=>setThing(e.target.value)} value={thing} disabled={alphabet === ''}/>
-        </FormControl>
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{ height: 40, width: 100, margin: "auto" }}
-          disabled={alphabet === ''}
-          onClick={submitHandler}
-        >
-          Submit
-        </Button>
-      </form>
     </>
   )
 };
