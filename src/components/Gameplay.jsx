@@ -1,6 +1,8 @@
 import { Alert, Box, Button, FormControl, Input, InputLabel, Typography } from "@mui/material";
 import React, { useState, useEffect } from "react"
 import { useSocketContext } from "../hooks/useSocketContext";
+import CrisisAlertIcon from '@mui/icons-material/CrisisAlert';
+import Timer from "./Timer";
 
 const Gameplay = ({ isTurn, room }) => {
   const socket = useSocketContext();
@@ -13,6 +15,8 @@ const Gameplay = ({ isTurn, room }) => {
   const [place, setPlace] = useState("");
   const [animal, setAnimal] = useState("");
   const [thing, setThing] = useState("");
+
+  const [seconds, setSeconds] = useState(120);
 
   function generateRandomAlphabet() {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -32,6 +36,7 @@ const Gameplay = ({ isTurn, room }) => {
     socket.on("receive_message", (data) => {
       console.log(data.message, data.name);
       setAlphabet(data.message);
+      setSeconds(120);
       setUser(data.name);
     });
 
@@ -41,6 +46,7 @@ const Gameplay = ({ isTurn, room }) => {
       setAlphabet('');
       setIsGenerating(false);
       setGenerated(false);
+      setSeconds(0);
     });
 
     return () => {
@@ -61,6 +67,7 @@ const Gameplay = ({ isTurn, room }) => {
       setIsGenerating(false);
       setGenerated(true);
       setRandomAlpha('');
+      setSeconds(120);
     }
   };
 
@@ -74,45 +81,61 @@ const Gameplay = ({ isTurn, room }) => {
     setAlphabet('');
     setIsGenerating(false);
     setGenerated(false);
+    setSeconds(0);
   };
 
   return (
     <>
       <Box
-        m={0}
+        m={1}
         display="flex"
-        alignItems="center"
         sx={{ marginTop: "2em" }}
+        flexDirection="column"
       >
+        <Box
+          display="inline-flex"
+          alignItems="center"
+          justifyContent="center"
+        >
         {isTurn ?
           generated ?
             <Alert severity="info">
               {`Generated ${alphabet}`}
             </Alert>
             :
-          <>
-            <Button
-              variant="contained"
-              color="warning"
-              sx={{ height: 40, minWidth: 100, marginRight: "1em" }}
-              onClick={alphabetGenerated}
-            >
-              {isGenerating ? "stop" : "start"}
-            </Button>
-            {randomAlpha && <Typography variant="h5" style={{ marginTop: "10px" }} >{randomAlpha}</Typography>}
-          </>
+            <>
+              <Button
+                variant="contained"
+                color="warning"
+                sx={{ height: 40, minWidth: 100, marginRight: "1em" }}
+                onClick={alphabetGenerated}
+              >
+                {isGenerating ? "stop" : "start"}
+              </Button>
+              {randomAlpha && <Typography variant="h5" style={{ marginTop: "10px" }} >{randomAlpha}</Typography>}
+            </>
           :
-          <Alert severity="info">
+          <Alert 
+            severity="info"
+          >
             {alphabet ? `${user} generated ${alphabet}`: "This is not your turn"}
           </Alert>
         }
+        </Box>
         {alphabet &&
-          <Alert 
-            severity="success"
-            sx={{marginLeft: "auto"}}
+          <Box
+            display="flex"
+            m={1}
           >
-            Alphabet: {alphabet}
-          </Alert>
+            <Alert 
+              icon={<CrisisAlertIcon />}
+              severity="success"
+              sx={{marginRight: "auto"}}
+            >
+              {alphabet}
+            </Alert>
+            <Timer seconds={seconds} setSeconds={setSeconds} />
+          </Box>
         }
       </Box>
 
