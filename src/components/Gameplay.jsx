@@ -65,17 +65,13 @@ const Gameplay = ({ isTurn, room, turn }) => {
       }
     });
 
-    socket.on("calculate_score", () => {
-      // socket.emit("change_turn", { room });
-    });
-
     return () => {
       socket.off("receive_alphabet");
       socket.off("change_turn");
       socket.off("first_submit");
       socket.off("final_submit");
     };
-  }, []);
+  }, [socket]);
 
   const alphabetGenerated = () => {
     setIsGenerating(!isGenerating);

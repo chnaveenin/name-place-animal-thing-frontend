@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { useParams } from "react-router"
-import { Alert, Snackbar, Typography } from "@mui/material"
+import { Alert, Button, FormControl, InputLabel, MenuItem, Select, Snackbar, Typography } from "@mui/material"
 import CircularProgress from '@mui/material/CircularProgress';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -12,6 +12,7 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Gameplay from "../components/Gameplay";
 import { useSocketContext } from "../hooks/useSocketContext";
+import { Box } from "@mui/system";
 
 const Game = () => {
   const socket = useSocketContext();
@@ -34,20 +35,13 @@ const Game = () => {
   };
 
   useEffect(() => {
-    setLoading(true);
-    const getPeople = async () => {
-      console.log(("here"));
-      await socket.on("peopleInRoom", (data) => {
-        console.log("peopleData", data);
-        setPeople(data);
-        setIsRoomExists(true);
-        setPerson(data.find((p) => p.socketId === socket.id));
-        setTurningPerson(data.find((p) => p.isTurn));
-      });
-      setLoading(false);
-    }
-
-    getPeople();
+    socket.on("peopleInRoom", (data) => {
+      console.log("peopleData", data);
+      setPeople(data);
+      setIsRoomExists(true);
+      setPerson(data.find((p) => p.socketId === socket.id));
+      setTurningPerson(data.find((p) => p.isTurn));
+    });
 
     socket.on("welcome_message", (data) => {
       if (data.author === "System") {
@@ -63,9 +57,17 @@ const Game = () => {
       setCalculate(true);
     });
 
+    socket.on("calculated_score", () => {
+      setCalculate(false);
+      console.log("calculated score");
+      socket.emit("change_turn", {room: roomid});
+    });
+
     return () => {
       socket.off("peopleInRoom");
       socket.off("welcome_message");
+      socket.off("calculate_score");
+      socket.off("calculated_score");
     }
   }, [socket])
 
@@ -80,8 +82,8 @@ const Game = () => {
     { id: 'submission.place', label: 'Place', minWidth: "2em", render: (rowData) => rowData.submission.place },
     { id: 'submission.animal', label: 'Animal', minWidth: "2em", render: (rowData) => rowData.submission.animal },
     { id: 'submission.thing', label: 'Thing', minWidth: "2em", render: (rowData) => rowData.submission.thing },
-    { id: 'score', label: 'Score', minWidth: "1em" }
-  ];  
+    { id: '', label: 'Score', minWidth: "1em" }
+  ];
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -93,6 +95,10 @@ const Game = () => {
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
+  };
+
+  const handleSubmitScore = () => {
+    socket.emit("calculate_score", { people, roomid });
   };
 
   return (
@@ -161,22 +167,25 @@ const Game = () => {
           }
           <Gameplay room={roomid} isTurn={person?.isTurn} turn={turningPerson?.name} />
           {calculate &&
-            <div style={{ display: "flex", justifyContent: "center" }}>
+            <div style={{ marginTop: "1em" }}>
               <Paper sx={{ width: "100%", overflow: 'hidden' }}>
                 <TableContainer sx={{ maxHeight: 440 }}>
                   <Table stickyHeader aria-label="sticky table" sx={{ backgroundColor: "aliceblue" }}>
                     <TableHead>
                       <TableRow>
-                        <TableCell align="center" colSpan={1}>
+                        <TableCell align="center" colSpan={1} sx={{ backgroundColor: "aliceblue" }}>
                         </TableCell>
-                        <TableCell align="center" colSpan={4}>
+                        <TableCell align="center" colSpan={4} sx={{ backgroundColor: "aliceblue" }}>
                           Submission
                         </TableCell>
-                        <TableCell align="center" colSpan={1}>
-                        </TableCell>
+                        {person?.isTurn &&
+                          <TableCell align="center" colSpan={1} sx={{ backgroundColor: "aliceblue" }}>
+                          </TableCell>
+                        }
                       </TableRow>
                       <TableRow>
                         {score_columns.map((column) => (
+                          (column.id || person?.isTurn) &&
                           <TableCell className="tableCell"
                             key={column.id}
                             align="left"
@@ -195,12 +204,37 @@ const Game = () => {
                           return (
                             <TableRow key={index} hover role="checkbox" tabIndex={-1}>
                               {score_columns.map((column) => {
-                                const value = row[column.id];
                                 return (
+                                  (column.id || person?.isTurn) &&
                                   <TableCell className="tableCell" key={column.id} align={column.align}>
-                                    {column.format && typeof value === 'number'
-                                      ? column.format(value)
-                                      : value}
+                                    {column.id ?
+                                      (column.render ? column.render(row) ? column.render(row) : '--' : row[column.id])
+                                      :
+                                      person?.isTurn &&
+                                      <FormControl>
+                                        <Select
+                                          sx={{height: "2em", minWidth:"2em"}}
+                                          onChange={(e)=>setPeople((pv)=>{
+                                            const person = pv[index];
+                                            const updatedPerson = {...person, newScore: e.target.value};
+                                            pv[index] = updatedPerson;
+                                            return pv;
+                                          })}
+                                          autoWidth
+                                          label="Score"
+                                        >
+                                          <MenuItem value={0}>0</MenuItem>
+                                          <MenuItem value={5}>5</MenuItem>
+                                          <MenuItem value={10}>10</MenuItem>
+                                          <MenuItem value={15}>15</MenuItem>
+                                          <MenuItem value={20}>20</MenuItem>
+                                          <MenuItem value={25}>25</MenuItem>
+                                          <MenuItem value={30}>30</MenuItem>
+                                          <MenuItem value={35}>35</MenuItem>
+                                          <MenuItem value={40}>40</MenuItem>
+                                        </Select>
+                                      </FormControl>
+                                    }
                                   </TableCell>
                                 );
                               })}
@@ -222,6 +256,20 @@ const Game = () => {
                   sx={{ backgroundColor: "aliceblue" }}
                 />
               </Paper>
+              {person?.isTurn &&
+                <Box
+                  display="flex"
+                  justifyContent="right"
+                >
+                <Button
+                  variant="outlined"
+                  sx={{ marginTop: "1em" }}
+                  onClick={handleSubmitScore}
+                >
+                  Submit
+                </Button>
+                </Box>
+              }
             </div>
           }
           {welcome &&
