@@ -65,8 +65,8 @@ const Gameplay = ({ isTurn, room, turn }) => {
       }
     });
 
-    socket.on("final_submit", () => {
-      socket.emit("change_turn", { room });
+    socket.on("calculate_score", () => {
+      // socket.emit("change_turn", { room });
     });
 
     return () => {
