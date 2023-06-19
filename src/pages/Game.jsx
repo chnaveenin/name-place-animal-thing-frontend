@@ -21,6 +21,7 @@ const Game = () => {
   const { roomid } = useParams();
   const [isRoomExists, setIsRoomExists] = useState(true);
   const [people, setPeople] = useState([]);
+  const [sortedPeople, setSortedPeople] = useState([]);
   const [loading, setLoading] = useState(false);
   const [welcome, setWelcome] = useState("");
 
@@ -76,6 +77,11 @@ const Game = () => {
       socket.off("change_turn");
     }
   }, [socket])
+
+  useEffect(() => {
+    const sortedData = [...people].sort((a, b) => b.score - a.score);
+    setSortedPeople(sortedData);
+  }, [people]);
 
   const columns = [
     { id: 'name', label: 'Name', minWidth: "4em" },
@@ -160,7 +166,7 @@ const Game = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {people
+                      {sortedPeople
                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         .map((row, index) => {
                           return (
