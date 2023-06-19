@@ -63,11 +63,16 @@ const Game = () => {
       socket.emit("change_turn", {room: roomid});
     });
 
+    socket.on("change_turn", () => {
+      setCalculate(false);
+    });
+
     return () => {
       socket.off("peopleInRoom");
       socket.off("welcome_message");
       socket.off("calculate_score");
       socket.off("calculated_score");
+      socket.off("change_turn");
     }
   }, [socket])
 
@@ -130,7 +135,7 @@ const Game = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {people.sort((a, b) => b.score - a.score)
+                      {people
                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         .map((row, index) => {
                           return (

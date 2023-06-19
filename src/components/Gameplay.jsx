@@ -129,7 +129,7 @@ const Gameplay = ({ isTurn, room, turn }) => {
           {isTurn ?
             generated ?
               <Alert severity="info">
-                {`Generated ${alphabet}`}
+                {`You generated ${alphabet}`}
               </Alert>
               :
               <>
@@ -171,31 +171,33 @@ const Gameplay = ({ isTurn, room, turn }) => {
                 style={{ display: "flex", flexDirection: "column", marginTop: "2em", justifyContent: "center" }}
                 onSubmit={submitHandler}
               >
-                <FormControl style={{ marginBottom: "1em" }}>
+                <FormControl style={{ marginBottom: "1em" }} required="true">
                   <InputLabel htmlFor="name-input">Name</InputLabel>
-                  <Input id="name-input" onChange={(e) => setName(e.target.value)} value={name} disabled={alphabet === ''} />
+                  <Input required="true" id="name-input" onChange={(e) => setName(e.target.value)} value={name} disabled={alphabet === ''} />
                 </FormControl>
-                <FormControl style={{ marginBottom: "1em" }}>
+                <FormControl style={{ marginBottom: "1em" }} required="true">
                   <InputLabel htmlFor="place-input">Place</InputLabel>
-                  <Input id="place-input" onChange={(e) => setPlace(e.target.value)} value={place} disabled={alphabet === ''} />
+                  <Input required="true" id="place-input" onChange={(e) => setPlace(e.target.value)} value={place} disabled={alphabet === ''} />
                 </FormControl>
-                <FormControl style={{ marginBottom: "1em" }}>
+                <FormControl style={{ marginBottom: "1em" }} required="true">
                   <InputLabel htmlFor="animal-input">Animal</InputLabel>
-                  <Input id="animal-input" onChange={(e) => setAnimal(e.target.value)} value={animal} disabled={alphabet === ''} />
+                  <Input required="true" id="animal-input" onChange={(e) => setAnimal(e.target.value)} value={animal} disabled={alphabet === ''} />
                 </FormControl>
-                <FormControl style={{ marginBottom: "2em" }}>
+                <FormControl style={{ marginBottom: "2em" }} required="true">
                   <InputLabel htmlFor="thing-input">Thing</InputLabel>
-                  <Input id="thing-input" onChange={(e) => setThing(e.target.value)} value={thing} disabled={alphabet === ''} />
+                  <Input required="true" id="thing-input" onChange={(e) => setThing(e.target.value)} value={thing} disabled={alphabet === ''} />
                 </FormControl>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  sx={{ height: 40, width: 100, margin: "auto" }}
-                  disabled={alphabet === ''}
-                  onClick={submitHandler}
-                >
-                  Submit
-                </Button>
+                {!(name === '' || place === '' || animal === '' || thing === '') &&
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    sx={{ height: 40, width: 100, margin: "auto" }}
+                    disabled={alphabet === ''}
+                    onClick={submitHandler}
+                  >
+                    Submit
+                  </Button>
+                }
               </form>
             }
           </>
