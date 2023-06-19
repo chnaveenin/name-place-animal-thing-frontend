@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { useParams } from "react-router"
-import { Alert, Button, FormControl, InputLabel, MenuItem, Select, Snackbar, Typography } from "@mui/material"
+import { Alert, Button, FormControl, MenuItem, Select, Snackbar, Typography } from "@mui/material"
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CircularProgress from '@mui/material/CircularProgress';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -60,7 +61,7 @@ const Game = () => {
     socket.on("calculated_score", () => {
       setCalculate(false);
       console.log("calculated score");
-      socket.emit("change_turn", {room: roomid});
+      socket.emit("change_turn", { room: roomid });
     });
 
     socket.on("change_turn", () => {
@@ -106,6 +107,13 @@ const Game = () => {
     socket.emit("calculate_score", { people, roomid });
   };
 
+  const handleCopyToClipboard = () => {
+    navigator.clipboard.writeText(roomid)
+      .catch((error) => {
+        alert('Failed to copy text: ', error);
+      });
+  };
+
   return (
     (loading
       ?
@@ -114,7 +122,24 @@ const Game = () => {
       (isRoomExists
         ?
         <>
-          <Typography style={{ width: "100%", textAlign: "center", marginBottom: "1em" }} variant="h5">RoomID: {roomid}</Typography>
+          <Typography
+            style={{
+              width: "100%",
+              textAlign: "center",
+              marginBottom: "1em"
+            }}
+            variant="h5"
+          >
+            RoomID: {roomid}
+            <Button
+              onClick={handleCopyToClipboard}
+              sx={{ paddingBottom: "0.75em" }}
+            >
+              <ContentCopyIcon
+                fontSize="small"
+              />
+            </Button>
+          </Typography>
           {(!calculate || !person?.isTurn) &&
             <div style={{ display: "flex", justifyContent: "center" }}>
               <Paper sx={{ width: "20em", overflow: 'hidden' }}>
@@ -218,10 +243,10 @@ const Game = () => {
                                       person?.isTurn &&
                                       <FormControl>
                                         <Select
-                                          sx={{height: "2em", minWidth:"2em"}}
-                                          onChange={(e)=>setPeople((pv)=>{
+                                          sx={{ height: "2em", minWidth: "2em" }}
+                                          onChange={(e) => setPeople((pv) => {
                                             const person = pv[index];
-                                            const updatedPerson = {...person, newScore: e.target.value};
+                                            const updatedPerson = { ...person, newScore: e.target.value };
                                             pv[index] = updatedPerson;
                                             return pv;
                                           })}
@@ -266,13 +291,13 @@ const Game = () => {
                   display="flex"
                   justifyContent="right"
                 >
-                <Button
-                  variant="outlined"
-                  sx={{ marginTop: "1em" }}
-                  onClick={handleSubmitScore}
-                >
-                  Submit
-                </Button>
+                  <Button
+                    variant="outlined"
+                    sx={{ marginTop: "1em" }}
+                    onClick={handleSubmitScore}
+                  >
+                    Submit
+                  </Button>
                 </Box>
               }
             </div>
