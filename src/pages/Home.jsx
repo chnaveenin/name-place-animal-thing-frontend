@@ -198,7 +198,7 @@ const Home = () => {
                       variant="filled"
                       autoComplete="off"
                       color="warning"
-                      onChange={(e) => setRoomId(e.target.value.strip())}
+                      onChange={(e) => setRoomId(e.target.value.trim())}
                     />
                     <Button
                       variant="contained"
