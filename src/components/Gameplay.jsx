@@ -1,6 +1,14 @@
-import { Alert, Box, Button, FormControl, Input, InputLabel, Typography } from "@mui/material";
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { useSocketContext } from "../hooks/useSocketContext";
+import { 
+  Alert, 
+  Box,
+  Button, 
+  FormControl, 
+  Input, 
+  InputLabel, 
+  Typography 
+} from "@mui/material";
 import CrisisAlertIcon from '@mui/icons-material/CrisisAlert';
 import Timer from "./Timer";
 
@@ -17,6 +25,12 @@ const Gameplay = ({ isTurn, room, turn }) => {
   const [thing, setThing] = useState("");
 
   const [seconds, setSeconds] = useState(120);
+  const secondsRef = useRef(seconds);
+
+  useEffect(() => {
+    secondsRef.current = seconds;
+  }, [seconds]);
+
   const [submitted, setSubmitted] = useState(false);
 
   function generateRandomAlphabet() {
@@ -59,7 +73,7 @@ const Gameplay = ({ isTurn, room, turn }) => {
     });
 
     socket.on("first_submit", () => {
-      if (seconds > 30) {
+      if (secondsRef.current > 30) {
         console.log("setting seconds 30", seconds);
         setSeconds(30);
       }

@@ -178,44 +178,44 @@ const Home = () => {
             >
               Join Room
             </Button>
-            {
-              join && (
-                <Box
-                  m={1}
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                >
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault()
-                      enterRoom(roomId)
-                    }}
-                    style={{ marginRight: "0.5em" }}
-                  >
-                    <TextField
-                      id="outlined-basic"
-                      label="roomid"
-                      variant="filled"
-                      autoComplete="off"
-                      color="warning"
-                      onChange={(e) => setRoomId(e.target.value.trim())}
-                    />
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      sx={{ marginLeft: "10px", marginTop: "10px" }}
-                      onClick={() => enterRoom(roomId)}
-                    >
-                      join
-                    </Button>
-                  </form>
-                  {joinloading && <CircularProgress />}
-                  {error && <Alert severity="error">{error}</Alert>}
-                </Box>
-              )
-            }
           </Box>
+          {
+            join && (
+              <Box
+                m={1}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+              >
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault()
+                    enterRoom(roomId)
+                  }}
+                  style={{ marginRight: "0.5em" }}
+                >
+                  <TextField
+                    id="outlined-basic"
+                    label="roomid"
+                    variant="filled"
+                    autoComplete="off"
+                    color="warning"
+                    onChange={(e) => setRoomId(e.target.value.trim())}
+                  />
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    sx={{ marginLeft: "10px", marginTop: "10px" }}
+                    onClick={() => enterRoom(roomId)}
+                  >
+                    join
+                  </Button>
+                </form>
+                {joinloading && <CircularProgress />}
+                {error && <Alert severity="error">{error}</Alert>}
+              </Box>
+            )
+          }
         </div>
       </div>
   )
