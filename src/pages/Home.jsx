@@ -70,12 +70,13 @@ const Home = () => {
       enterRoom(data.room);
     });
 
-    socket.on("room_exists", () => {
-      console.log("room exists", roomId);
-      enterRoom(roomId);
+    socket.on("room_exists", (data) => {
+      console.log("room exists", data.room);
+      enterRoom(data.room);
     });
 
-    socket.on("room_not_found", () => {
+    socket.on("room_not_found", (data) => {
+      console.log("room not found", data.room);
       setError("room not found");
     });
 
@@ -187,7 +188,7 @@ const Home = () => {
                 <form
                   onSubmit={(e) => {
                     e.preventDefault()
-                    enterRoom(roomId)
+                    socket.emit("is_room_exists", {room: roomId})
                   }}
                   style={{ marginRight: "0.5em" }}
                 >
@@ -203,7 +204,7 @@ const Home = () => {
                     variant="contained"
                     color="primary"
                     sx={{ marginLeft: "10px", marginTop: "10px", fontWeight: "bolder" }}
-                    onClick={() => socket.emit("is_room_exists", {roomId})}
+                    onClick={() => socket.emit("is_room_exists", {room: roomId})}
                   >
                     join
                   </Button>
