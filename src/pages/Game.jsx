@@ -250,6 +250,7 @@ const Game = () => {
                                       <FormControl>
                                         <Select
                                           sx={{ height: "2em", minWidth: "2em" }}
+                                          defaultValue={0}
                                           onChange={(e) => setPeople((pv) => {
                                             const person = pv[index];
                                             const updatedPerson = { ...person, newScore: e.target.value };
@@ -299,7 +300,7 @@ const Game = () => {
                 >
                   <Button
                     variant="outlined"
-                    sx={{ marginTop: "1em" }}
+                    sx={{ marginTop: "1.5em", borderBottom: "2px solid" }}
                     onClick={handleSubmitScore}
                   >
                     Submit

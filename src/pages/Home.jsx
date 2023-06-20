@@ -118,8 +118,9 @@ const Home = () => {
             sx={{ marginBottom: "15%" }}
           >
             <Typography
-              variant="h2"
+              variant="h4"
               color="black"
+              textAlign="center"
               sx={{ marginBottom: "0.5em" }}
             >
               Welcome {username}
