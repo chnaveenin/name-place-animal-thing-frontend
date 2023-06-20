@@ -88,10 +88,6 @@ const Home = () => {
     })
   }, [socket]);
 
-  useEffect(() => {
-    console.log(joinRoom);
-  }, [joinRoom]);
-
   const enterRoom = async (room) => {
     setJoinLoading(true);
     socket.emit("join_room", { room, username: usernameRef.current });
@@ -99,6 +95,7 @@ const Home = () => {
     setJoinLoading(false);
     setLoading(false);
 
+    console.log("navigating "+room);
     navigate("/room/" + room);
   };
 
@@ -162,7 +159,7 @@ const Home = () => {
             <Button
               variant="contained"
               color="secondary"
-              sx={{ height: 40, width: 150, marginRight: "1em" }}
+              sx={{ height: 40, width: 150, marginRight: "1em", fontWeight: "bold" }}
               onClick={createRoom}
             >
               Create Room
@@ -170,7 +167,7 @@ const Home = () => {
             <Button
               variant="contained"
               color="success"
-              sx={{ height: 40, width: 150 }}
+              sx={{ height: 40, width: 150, fontWeight: "bold" }}
               onClick={() => {
                 setJoin(!join);
                 setJoinRoom(true)
@@ -182,7 +179,7 @@ const Home = () => {
           {
             join && (
               <Box
-                m={1}
+                m={2}
                 display="flex"
                 justifyContent="center"
                 alignItems="center"
@@ -205,8 +202,8 @@ const Home = () => {
                   <Button
                     variant="contained"
                     color="primary"
-                    sx={{ marginLeft: "10px", marginTop: "10px" }}
-                    onClick={() => enterRoom(roomId)}
+                    sx={{ marginLeft: "10px", marginTop: "10px", fontWeight: "bolder" }}
+                    onClick={() => socket.emit("is_room_exists", {roomId})}
                   >
                     join
                   </Button>

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react"
-import { useParams } from "react-router"
+import { useParams, useNavigate } from "react-router"
+import { useHistory } from "react-router-dom"
 import { useSocketContext } from "../hooks/useSocketContext";
 import {
   Alert, 
+  Box,
   Button, 
   CircularProgress,
   FormControl, 
@@ -21,7 +23,6 @@ import {
 } from "@mui/material"
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import Gameplay from "../components/Gameplay";
-import { Box } from "@mui/system";
 
 const Game = () => {
   const socket = useSocketContext();
@@ -39,6 +40,20 @@ const Game = () => {
   const [open, setOpen] = useState(false);
   const [calculate, setCalculate] = useState(false);
 
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleReload = (event) => {
+      event.preventDefault();
+      navigate('/');
+    };
+
+    window.addEventListener('load', handleReload);
+
+    return () => {
+      window.removeEventListener('load', handleReload);
+    };
+  }, [navigate]);
 
   const handleClose = () => {
     setOpen(false);
@@ -98,10 +113,26 @@ const Game = () => {
 
   const score_columns = [
     { id: 'name', label: 'Name', minWidth: "3em" },
-    { id: 'submission.name', label: 'Name', minWidth: "2em", render: (rowData) => rowData.submission.name },
-    { id: 'submission.place', label: 'Place', minWidth: "2em", render: (rowData) => rowData.submission.place },
-    { id: 'submission.animal', label: 'Animal', minWidth: "2em", render: (rowData) => rowData.submission.animal },
-    { id: 'submission.thing', label: 'Thing', minWidth: "2em", render: (rowData) => rowData.submission.thing },
+    { id: 'submission.name',
+      label: 'Name',
+      minWidth: "2em", 
+      render: (rowData) => rowData.submission.name 
+    },
+    { id: 'submission.place',
+      label: 'Place',
+      minWidth: "2em", 
+      render: (rowData) => rowData.submission.place 
+    },
+    { id: 'submission.animal',
+      label: 'Animal',
+      minWidth: "2em", 
+      render: (rowData) => rowData.submission.animal 
+    },
+    { id: 'submission.thing',
+      label: 'Thing',
+      minWidth: "2em", 
+      render: (rowData) => rowData.submission.thing 
+    },
     { id: '', label: 'Score', minWidth: "1em" }
   ];
 

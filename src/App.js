@@ -8,8 +8,6 @@ function App() {
     <>
       <Routes>
         <Route exact path="/" element={<Home />} />
-      </Routes>
-      <Routes>
         <Route exact path="/room/:roomid" element={<Game />} />
       </Routes>
     </>
