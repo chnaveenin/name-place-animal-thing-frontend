@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router"
-import { useHistory } from "react-router-dom"
 import { useSocketContext } from "../hooks/useSocketContext";
 import {
   Alert, 
@@ -31,7 +30,7 @@ const Game = () => {
   const [isRoomExists, setIsRoomExists] = useState(true);
   const [people, setPeople] = useState([]);
   const [sortedPeople, setSortedPeople] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [welcome, setWelcome] = useState("");
 
   const [person, setPerson] = useState();
@@ -66,6 +65,7 @@ const Game = () => {
       setIsRoomExists(true);
       setPerson(data.find((p) => p.socketId === socket.id));
       setTurningPerson(data.find((p) => p.isTurn));
+      setLoading(false);
     });
 
     socket.on("welcome_message", (data) => {
@@ -84,6 +84,7 @@ const Game = () => {
 
     socket.on("calculated_score", () => {
       setCalculate(false);
+      setLoading(false);
       console.log("calculated score");
       socket.emit("change_turn", { room: roomid });
     });
@@ -149,6 +150,7 @@ const Game = () => {
   };
 
   const handleSubmitScore = () => {
+    setLoading(true);
     socket.emit("calculate_score", { people, roomid });
   };
 
