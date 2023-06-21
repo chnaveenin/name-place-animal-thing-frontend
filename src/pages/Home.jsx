@@ -31,8 +31,6 @@ const Home = () => {
   const [loading, setLoading] = useState(false)
   const [joinloading, setJoinLoading] = useState(false)
 
-  const [joinRoom, setJoinRoom] = useState(false);
-
   const navigate = useNavigate()
 
   function generateRandomString(length) {
@@ -47,7 +45,6 @@ const Home = () => {
 
   const createRoom = async () => {
     setJoin(false);
-    setJoinRoom(false);
     setLoading(true);
     console.log("creating room");
 
@@ -97,7 +94,7 @@ const Home = () => {
     setLoading(false);
 
     console.log("navigating "+room);
-    navigate("/room/" + room);
+    navigate("/" + room);
   };
 
   return (
@@ -171,7 +168,6 @@ const Home = () => {
               sx={{ height: 40, width: 150, fontWeight: "bold" }}
               onClick={() => {
                 setJoin(!join);
-                setJoinRoom(true)
               }}
             >
               Join Room
