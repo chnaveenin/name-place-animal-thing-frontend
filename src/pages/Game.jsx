@@ -155,12 +155,12 @@ const Game = () => {
     socket.emit("calculate_score", { people, roomid });
   };
 
-  const handleCopyToClipboard = () => {
-    navigator.clipboard.writeText(roomid)
-      .catch((error) => {
-        alert('Failed to copy text: ', error);
-      });
-  };
+  // const handleCopyToClipboard = () => {
+  //   navigator.clipboard.writeText(roomid)
+  //     .catch((error) => {
+  //       alert('Failed to copy text: ', error);
+  //     });
+  // };
 
   return (
     (loading
@@ -179,14 +179,14 @@ const Game = () => {
             variant="h5"
           >
             RoomID: {roomid}
-            <Button
+            {/* <Button
               onClick={handleCopyToClipboard}
               sx={{ paddingBottom: "0.75em" }}
             >
               <ContentCopyIcon
                 fontSize="small"
               />
-            </Button>
+            </Button> */}
           </Typography>
           {(!calculate || !person?.isTurn) &&
             <div style={{ display: "flex", justifyContent: "center" }}>
