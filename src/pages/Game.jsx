@@ -62,6 +62,7 @@ const Game = () => {
     socket.on("peopleInRoom", (data) => {
       console.log("peopleData", data);
       setPeople(data);
+      setCalculate(false);
       setIsRoomExists(true);
       setPerson(data.find((p) => p.socketId === socket.id));
       setTurningPerson(data.find((p) => p.isTurn));
